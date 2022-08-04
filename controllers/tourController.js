@@ -1,3 +1,4 @@
+const query = require('express/lib/middleware/query');
 const Tour = require('./../models/tourModel');
 
 exports.createTour = async (req, res) => {
@@ -19,7 +20,14 @@ exports.createTour = async (req, res) => {
 
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach(el => delete queryObj[el]);
+
+    const query = Tour.find(queryObj);
+
+    // const tours = await Tour.find();
+    const tours = await query;
     res.status(200).json({
       status: 'success',
       requestedAt: req.requestTime,
